@@ -65,6 +65,9 @@ class QuickSorter
 
     public function toArray()
     {
+        if (count($this->orderItems) == 0) {
+            return $this->arr;
+        }
         return $this->quick_sort($this->arr, $this->orderItems);
     }
 
