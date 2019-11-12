@@ -36,10 +36,16 @@ class Task extends Model
      */
     public function scopeSortByStatus(Builder $query)
     {
-        $status_order = [Task::DOING => 1, Task::TODO => 2, Task::DONE => 3];
+        $status_order = [
+            Task::DOING => 1,
+            Task::TODO => 2,
+            Task::DONE => 3
+        ];
 
-        return $query->orderBy('title')->get()->sort(function ($a, $b) use ($status_order) {
-            return $status_order[$a->status] - $status_order[$b->status];
-        });
+        return $query->orderBy('title')
+            ->get()
+            ->sort(function ($a, $b) use ($status_order) {
+                return $status_order[$a->status] - $status_order[$b->status];
+            });
     }
 }
