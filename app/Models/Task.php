@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Utils\QuickSorter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -42,10 +43,10 @@ class Task extends Model
             Task::DONE => 3
         ];
 
-        return $query->orderBy('title')
-            ->get()
-            ->sort(function ($a, $b) use ($status_order) {
-                return $status_order[$a->status] - $status_order[$b->status];
-            });
+        $data = $query->get()->toArray();
+        $customSorter = new QuickSorter($data);
+        $sortedArray = $customSorter->sortBy("status", $status_order)->sortBy("title")->toArray();
+
+        return collect($sortedArray);
     }
 }
