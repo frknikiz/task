@@ -3,107 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TaskStoreRequest;
-use App\Http\Resources\TaskCollectionResource;
-use App\Http\Resources\TaskResource;
-use App\Models\Task;
+use App\Services\TaskService;
 
 class TaskController extends Controller
 {
+    private $taskService;
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return TaskCollectionResource
-     */
+    function __construct(TaskService $taskService)
+    {
+        $this->taskService = $taskService;
+    }
+
     public function index()
     {
-        return new TaskCollectionResource(Task::all());
+        return $this->taskService->getAllTask();
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param TaskStoreRequest $request
-     *
-     * @return TaskResource
-     */
     public function store(TaskStoreRequest $request)
     {
-        $request->validated();
-        $task = $this->fillTask($request, new Task());
-        $task->save();
-
-        return new TaskResource($task);
+        return $this->taskService->storeTask($request);
     }
 
-
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     *
-     * @return TaskResource
-     */
     public function show($id)
     {
-        return new TaskResource($this->getTaskById($id));
+        return $this->taskService->getTask($id);
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param TaskStoreRequest $request
-     * @param int $id
-     *
-     * @return TaskResource
-     */
     public function update(TaskStoreRequest $request, $id)
     {
-        $request->validated();
-        $task = $this->fillTask($request, $this->getTaskById($id));
-        $task->save();
-
-        return new TaskResource($task);
+        return $this->taskService->updateTask($request, $id);
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     *
-     * @return TaskCollectionResource
-     */
     public function destroy($id)
     {
-        $task = $this->getTaskById($id);
-        $task->delete();
-
-        return new TaskCollectionResource(collect($task));
-    }
-
-
-    private function getTaskById($id)
-    {
-        return Task::findOrFail($id);
-    }
-
-
-    /**
-     * @param TaskStoreRequest $request
-     * @param Task $task
-     *
-     * @return Task
-     */
-    private function fillTask(TaskStoreRequest $request, Task $task)
-    {
-        $task->title = $request['title'];
-        $task->description = $request['description'];
-        $task->status = $request['status'];
-        $task->user_id = $request['user_id'];
-
-        return $task;
+        return $this->taskService->deleteTask($id);
     }
 }
